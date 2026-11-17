@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/.netlify/functions/:fn",
+      "destination": "/api/:fn"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/process-reminders",
+      "schedule": "0 9 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
