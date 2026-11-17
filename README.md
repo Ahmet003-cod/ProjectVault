@@ -43,6 +43,50 @@
 
 ---
 
+## Ekran Görüntüleri ve Platform Bölümleri
+
+### 1. Giriş ve Kimlik Doğrulama (`login.html` / `register.html`)
+Modern SaaS giriş ekranı; e-posta veya kullanıcı adı ile giriş, şifre göster/gizle, beni hatırla ve şifre sıfırlama akışlarını sunar. Her kullanıcının verileri RLS politikalarıyla izole edilir.
+
+![ProjectVault Giriş Ekranı](assets/images/screenshots/01-login.png)
+
+### 2. Ana Dashboard (`dashboard.html`)
+Toplam proje, aktif projeler, fikir havuzu, tamamlanan projeler, bekleyen görevler ve yaklaşan alarmları gösteren 6 KPI kartı; bugün yapılacaklar, yaklaşan alarmlar, son aktiviteler, Chart.js ilerleme grafiği ve kural/AI tabanlı akıllı öneriler tek ekranda sunulur.
+
+![ProjectVault Ana Dashboard](assets/images/screenshots/02-dashboard.png)
+
+### 3. Projelerim (`projects.html`)
+Tüm projeleri kategori, durum, öncelik, favori ve arşiv filtreleriyle yönetebileceğiniz ekran. Kartlardan tek tıkla **"Hatırlat"** (Proje Hafızası) veya proje detayına geçiş yapılabilir.
+
+![ProjectVault Projelerim](assets/images/screenshots/03-projects.png)
+
+### 4. Proje Detayı & Proje Hafızası (`project-detail.html`)
+8 sekmeli çalışma alanı: **Genel Bakış & Hafıza**, **Sürükle-Bırak Kanban Görevleri**, **Dokümanlar**, **Proje Günlüğü**, **Teknik Notlar**, **Zaman Çizelgesi**, **AI Analizi** ve **AI Yol Haritası**. Üstteki **"Bu Projeyi Bana Hatırlat"** butonu veritabanındaki gerçek kayıtlardan 8 soruluk kapsamlı özet çıkarır.
+
+![ProjectVault Proje Detayı ve Hafıza](assets/images/screenshots/04-project-detail.png)
+
+### 5. Duolingo Tarzı AI Proje Yol Haritası (`roadmap.html`)
+Yapay zekâ projenizin mevcut durumunu ve yapılan çalışmaları analiz ederek hangi aşamadan başlamanız gerektiğine karar verir. Tamamlanan bölümler yeşil olarak işaretlenir; kaldığınız bölümde **"DEVAM ET"** odağı açılır ve her adımda çalışılacak konular ile AI ipuçları sunulur.
+
+![ProjectVault AI Yol Haritası](assets/images/screenshots/05-ai-roadmap.png)
+
+### 6. Takvim ve Sesli Alarmlar (`calendar.html`)
+FullCalendar ile aylık/haftalık/günlük takvim görünümü ve `Europe/Istanbul` zaman diliminde çalışan sesli alarm sistemi. Alarm saati geldiğinde seçili Web Audio zil sesi çalar; susturma veya 5 dakika erteleme yapılabilir.
+
+![ProjectVault Takvim ve Alarmlar](assets/images/screenshots/06-calendar-alarms.png)
+
+### 7. ProjectVault AI Asistanı (`ai-assistant.html`)
+Groq / Gemini veya OpenAI uyumlu modellerle çalışan; yalnızca kullanıcının kendi proje, günlük, teknik not ve doküman kayıtlarına dayanarak yanıt veren ve dayanak kaynakları listeleyen yapay zekâ asistanı.
+
+![ProjectVault AI Asistanı](assets/images/screenshots/07-ai-assistant.png)
+
+### 8. İstatistikler ve Performans Analitiği (`statistics.html`)
+Chart.js ile kategori dağılımı, proje durumları, ilerleme oranları, aylık tamamlanan görevler ve son 7 günlük aktivite grafikleri gerçek veritabanı kayıtlarından üretilir.
+
+![ProjectVault İstatistikler](assets/images/screenshots/08-statistics.png)
+
+---
+
 ## Mimari Genel Bakış
 
 ```
