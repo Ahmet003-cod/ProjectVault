@@ -333,6 +333,17 @@
           }
           return { data: { session: sess }, error: null };
         },
+        getUser: async () => {
+          const sess = getStoredSession();
+          if (!sess || !sess.user) return { data: { user: null }, error: { message: 'Aktif oturum yok.' } };
+          const db = await loadLocalDbState();
+          const exists = (db.users || []).find((u) => u.id === sess.user.id);
+          if (!exists) {
+            localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
+            return { data: { user: null }, error: { message: 'Kullanıcı hesabı silinmiş.' } };
+          }
+          return { data: { user: sess.user }, error: null };
+        },
         signInWithPassword: async ({ email, password }) => {
           const db = await loadLocalDbState();
           const cleanEmail = String(email || '').trim().toLowerCase();
@@ -1299,22 +1310,76 @@
     { id: 'settings', label: 'Ayarlar', href: 'settings.html', icon: 'settings' }
   ];
 
+  function clearAllAuthTokens() {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith('sb-') && k.endsWith('-auth-token')) {
+          localStorage.removeItem(k);
+        }
+      });
+      sessionStorage.clear();
+    } catch (_) {}
+  }
+
+  let sessionCheckInFlight = false;
+  async function verifyActiveUserSession(sb, redirectOnFail = true) {
+    if (!sb || sessionCheckInFlight) return null;
+    sessionCheckInFlight = true;
+    try {
+      const { data: userRes, error: userErr } = await sb.auth.getUser();
+      if (userErr || !userRes?.user) {
+        await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+        clearAllAuthTokens();
+        if (redirectOnFail) {
+          window.location.replace('login.html?reason=session_ended');
+        }
+        return null;
+      }
+
+      if (!isLocalDbMode) {
+        const { data: profCheck, error: profErr } = await sb
+          .from('profiles')
+          .select('id')
+          .eq('user_id', userRes.user.id)
+          .maybeSingle();
+        if (!profErr && !profCheck) {
+          await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+          clearAllAuthTokens();
+          if (redirectOnFail) {
+            window.location.replace('login.html?reason=session_ended');
+          }
+          return null;
+        }
+      }
+      return userRes.user;
+    } catch (_) {
+      return currentUser;
+    } finally {
+      sessionCheckInFlight = false;
+    }
+  }
+
   async function initAppShell(activePage, pageTitle = 'ProjectVault') {
     applyTheme(getSavedTheme());
     const sb = await initSupabase();
 
     if (!sb) {
-      window.location.href = 'login.html?reason=config';
+      window.location.replace('login.html?reason=config');
       return null;
     }
 
     const { data: sessData } = await sb.auth.getSession();
     if (!sessData || !sessData.session || !sessData.session.user) {
-      window.location.href = 'login.html';
+      clearAllAuthTokens();
+      window.location.replace('login.html');
       return null;
     }
 
-    currentUser = sessData.session.user;
+    const verifiedUser = await verifyActiveUserSession(sb, true);
+    if (!verifiedUser) return null;
+
+    currentUser = verifiedUser;
 
     const { data: prof } = await sb
       .from('profiles')
@@ -1471,6 +1536,14 @@
 
     // Sekme açıkken her 4 saniyede bir gelen alarmları kontrol edip sesli çal
     setInterval(checkDueClientReminders, 4000);
+
+    // Supabase'den hesap silinirse veya oturum iptal edilirse anında çıkış yap
+    setInterval(() => verifyActiveUserSession(sb, true), 15000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        verifyActiveUserSession(sb, true);
+      }
+    });
 
     // Mobil alt gezinme çubuğu (Duolingo tarzı hızlı mobil erişim)
     if (!document.getElementById('pv-mobile-bottom-nav')) {
@@ -1634,6 +1707,8 @@
     initAppShell,
     loadNotifications,
     triggerAlarmRingingUI,
+    clearAllAuthTokens,
+    verifyActiveUserSession,
     getCurrentUser: () => currentUser,
     getCurrentProfile: () => currentProfile
   };

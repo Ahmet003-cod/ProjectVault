@@ -10,10 +10,14 @@
   async function signOut() {
     const sb = PV.sb.getSupabaseClient() || (await PV.sb.initSupabase());
     if (sb) {
-      await sb.auth.signOut();
+      await sb.auth.signOut({ scope: 'local' }).catch(() => {});
     }
-    sessionStorage.clear();
-    window.location.href = 'login.html';
+    if (PV.sb.clearAllAuthTokens) {
+      PV.sb.clearAllAuthTokens();
+    } else {
+      sessionStorage.clear();
+    }
+    window.location.replace('login.html?logged_out=1');
   }
 
   function setupPasswordToggles() {
@@ -77,11 +81,27 @@
       localDbInfo?.classList.remove('hidden');
     }
 
-    // Zaten giriş yapmışsa Dashboard'a yönlendir
-    const { data: sess } = await sb.auth.getSession();
-    if (sess?.session?.user && !window.location.hash.includes('type=recovery')) {
-      window.location.href = 'dashboard.html';
-      return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('logged_out') === '1') {
+      await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+      PV.sb.clearAllAuthTokens?.();
+      showAuthAlert('login-alert', 'Güvenli çıkış yapıldı. Tekrar giriş yapmak için bilgilerinizi girin.', 'success');
+    } else if (params.get('reason') === 'session_ended') {
+      await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+      PV.sb.clearAllAuthTokens?.();
+      showAuthAlert('login-alert', 'Hesabınız kaldırıldı veya oturumunuz sonlandırıldı. Lütfen tekrar giriş yapın.', 'warning');
+    } else {
+      // Zaten geçerli bir kullanıcı oturumu varsa sunucudan doğrulayıp Dashboard'a yönlendir
+      const { data: sess } = await sb.auth.getSession();
+      if (sess?.session?.user && !window.location.hash.includes('type=recovery')) {
+        const { data: uData, error: uErr } = await sb.auth.getUser();
+        if (!uErr && uData?.user) {
+          window.location.replace('dashboard.html');
+          return;
+        }
+        await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+        PV.sb.clearAllAuthTokens?.();
+      }
     }
 
     // Şifre sıfırlama geri dönüşü (PASSWORD_RECOVERY)
