@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Yol Haritası — ProjectVault</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="pv-sidebar-mount"></div>
+
+    <div class="main-wrapper">
+      <div id="pv-header-mount"></div>
+
+      <main class="page-content fade-in">
+        <div class="page-header">
+          <div>
+            <h1>AI Proje Yol Haritası</h1>
+            <p>Yapay zekâ projenizin hangi aşamasında olduğunuzu analiz eder, çalışmanız gereken konuları sırayla sunar; tamamladıkça sonraki bölüme geçersiniz.</p>
+          </div>
+        </div>
+
+        <section id="roadmap-mount"></section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/roadmap.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => PV.roadmap.initRoadmapPage());
+  </script>
+</body>
+</html>

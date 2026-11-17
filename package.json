@@ -1,0 +1,18 @@
+{
+  "name": "projectvault",
+  "version": "1.0.0",
+  "description": "ProjectVault — Personal Project Management, Knowledge & AI Memory Platform",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx netlify-cli dev",
+    "serve": "npx serve .",
+    "test:syntax": "node -e \"const fs=require('fs'),path=require('path'),cp=require('child_process');const dirs=['assets/js','netlify/functions'];for(const d of dirs){for(const f of fs.readdirSync(d)){if(f.endsWith('.js')){const p=path.join(d,f);cp.execFileSync(process.execPath,['--check',p],{stdio:'inherit'});console.log('OK:',p);}}}\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

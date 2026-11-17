@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayarlar — ProjectVault</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="pv-sidebar-mount"></div>
+
+    <div class="main-wrapper">
+      <div id="pv-header-mount"></div>
+
+      <main class="page-content fade-in">
+        <div class="page-header">
+          <div>
+            <h1>Ayarlar</h1>
+            <p>Profil bilgileri, koyu/açık tema tercihi, şifre güvenliği, bildirimler ve sistem bağlantıları.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="user" width="18" height="18" class="text-cyan"></i> Profil ve Tema Ayarları</h2>
+            </div>
+            <form id="set-profile-form">
+              <div class="form-group">
+                <label class="form-label" for="set-email">E-posta</label>
+                <input type="email" id="set-email" class="form-control" disabled>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-full-name">Ad Soyad</label>
+                <input type="text" id="set-full-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-username">Kullanıcı Adı</label>
+                <input type="text" id="set-username" class="form-control" placeholder="Opsiyonel">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-theme">Tema Tercihi</label>
+                <select id="set-theme" class="form-control">
+                  <option value="dark">Koyu Tema (Varsayılan)</option>
+                  <option value="light">Açık Tema</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Profili Kaydet</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="lock" width="18" height="18" class="text-purple"></i> Şifre Güncelleme</h2>
+            </div>
+            <form id="set-password-form">
+              <div class="form-group">
+                <label class="form-label" for="set-new-password">Yeni Şifre (En az 6 karakter)</label>
+                <input type="password" id="set-new-password" class="form-control" minlength="6" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-confirm-password">Yeni Şifre Tekrar</label>
+                <input type="password" id="set-confirm-password" class="form-control" minlength="6" required>
+              </div>
+              <button type="submit" class="btn btn-secondary">Şifreyi Güncelle</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="bell" width="18" height="18" class="text-warning"></i> Sesli Alarm &amp; Bildirim</h2>
+            </div>
+            <p class="text-secondary mb-3" style="font-size:0.88rem;">
+              Alarmlar <strong>Europe/Istanbul</strong> saat dilimiyle izlenir ve zamanı geldiğinde seçili ses tonuyla uyarır.
+            </p>
+            <div class="form-group">
+              <label class="form-label" for="set-alarm-sound">Varsayılan Alarm Sesi</label>
+              <select id="set-alarm-sound" class="form-control"></select>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" class="btn btn-primary btn-sm" id="set-test-alarm-btn">
+                <i data-lucide="volume-2" width="15" height="15"></i> Alarm Sesini Çal
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="set-webpush-btn">
+                <i data-lucide="bell-ring" width="15" height="15"></i> Tarayıcı Bildirim İzni İste
+              </button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="server" width="18" height="18" class="text-cyan"></i> Altyapı &amp; AI Durumu</h2>
+            </div>
+            <div class="flex-col gap-3" style="font-size:0.88rem;">
+              <div class="flex items-center justify-between gap-2">
+                <span>Supabase Bağlantısı:</span>
+                <span id="set-sb-status">Kontrol ediliyor...</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <span>AI Sağlayıcısı (Netlify):</span>
+                <span id="set-ai-status">Kontrol ediliyor...</span>
+              </div>
+              <div class="mt-2">
+                <button type="button" class="btn btn-outline btn-sm" id="set-sb-edit-btn">Supabase Bağlantı Ayarlarını Düzenle</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => PV.sb.initAppShell('settings', 'Ayarlar'));
+  </script>
+</body>
+</html>

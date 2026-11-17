@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proje Detayı — ProjectVault</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="pv-sidebar-mount"></div>
+
+    <div class="main-wrapper">
+      <div id="pv-header-mount"></div>
+
+      <main class="page-content fade-in" id="pd-root">
+        <div class="card mb-6" id="pd-header-box">
+          <div class="flex items-center gap-3"><div class="spinner"></div><span>Proje bilgileri yükleniyor...</span></div>
+        </div>
+
+        <nav class="tabs-nav" id="pd-tabs-nav" aria-label="Proje Sekmeleri">
+          <button type="button" class="tab-btn active" data-tab="overview">
+            <i data-lucide="brain" width="16" height="16"></i> 1. Genel Bakış &amp; Hafıza
+          </button>
+          <button type="button" class="tab-btn" data-tab="tasks">
+            <i data-lucide="kanban" width="16" height="16"></i> 2. Görevler
+          </button>
+          <button type="button" class="tab-btn" data-tab="documents">
+            <i data-lucide="file-text" width="16" height="16"></i> 3. Dokümanlar
+          </button>
+          <button type="button" class="tab-btn" data-tab="journal">
+            <i data-lucide="book-open" width="16" height="16"></i> 4. Proje Günlüğü
+          </button>
+          <button type="button" class="tab-btn" data-tab="technical">
+            <i data-lucide="code-2" width="16" height="16"></i> 5. Teknik Notlar
+          </button>
+          <button type="button" class="tab-btn" data-tab="timeline">
+            <i data-lucide="git-commit-horizontal" width="16" height="16"></i> 6. Zaman Çizelgesi
+          </button>
+          <button type="button" class="tab-btn" data-tab="ai">
+            <i data-lucide="sparkles" width="16" height="16"></i> 7. AI Analizi
+          </button>
+          <button type="button" class="tab-btn" data-tab="roadmap">
+            <i data-lucide="compass" width="16" height="16"></i> 8. AI Yol Haritası
+          </button>
+        </nav>
+
+        <section id="pd-tab-content"></section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/tasks.js"></script>
+  <script src="assets/js/documents.js"></script>
+  <script src="assets/js/journal.js"></script>
+  <script src="assets/js/reminders.js"></script>
+  <script src="assets/js/roadmap.js"></script>
+  <script src="assets/js/project-detail.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => PV.projectDetail.initProjectDetailPage());
+  </script>
+</body>
+</html>

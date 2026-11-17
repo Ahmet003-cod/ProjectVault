@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProjectVault — Kişisel Proje Yönetimi ve AI Hafıza Platformu</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body class="flex items-center justify-center" style="min-height:100vh;">
+  <div class="card flex-col items-center gap-4" style="max-width:420px;width:90%;text-align:center;padding:2.25rem;">
+    <img src="assets/images/logo.svg" alt="ProjectVault" style="width:56px;height:56px;">
+    <h1 style="font-size:1.35rem;font-weight:800;">Project<span class="text-gradient">Vault</span></h1>
+    <p class="text-secondary" style="font-size:0.9rem;" id="entry-status">Oturum durumu kontrol ediliyor...</p>
+    <div class="spinner"></div>
+    <div class="flex gap-2 mt-2">
+      <a href="login.html" class="btn btn-primary btn-sm">Giriş Ekranı</a>
+      <a href="register.html" class="btn btn-secondary btn-sm">Hesap Oluştur</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script>
+    (async function () {
+      PV.sb.applyTheme(localStorage.getItem('pv_theme') || 'dark');
+      const sb = await PV.sb.initSupabase();
+      if (!sb) {
+        window.location.href = 'login.html?reason=config';
+        return;
+      }
+      const { data } = await sb.auth.getSession();
+      if (data && data.session && data.session.user) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giriş Yap — ProjectVault</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+  <div class="auth-page">
+    <section class="auth-brand-panel">
+      <div class="auth-brand-content">
+        <div class="auth-logo-row">
+          <img src="assets/images/logo.svg" alt="ProjectVault Logo">
+          <span class="auth-logo-text">Project<span class="text-gradient">Vault</span></span>
+        </div>
+        <h1 class="auth-headline">Fikirlerinizi, Projelerinizi ve Teknik Hafızanızı Kaybetmeyin.</h1>
+        <p class="auth-lead">
+          Aylar önce başlattığınız bir projeyi açtığınızda nerede kaldığınızı, hangi teknik sorunları çözdüğünüzü ve bir sonraki adımınızı saniyeler içinde hatırlayın.
+        </p>
+
+        <div class="auth-features">
+          <div class="auth-feature-item">
+            <div class="auth-feature-icon"><i data-lucide="brain" width="20" height="20"></i></div>
+            <div>
+              <h4>Proje Hafızası &amp; Hatırlatma</h4>
+              <p>Her proje için amaç, çıkış fikri, çözülen/çözülmemiş sorunlar ve "Bu Projeyi Bana Hatırlat" özeti.</p>
+            </div>
+          </div>
+          <div class="auth-feature-item">
+            <div class="auth-feature-icon"><i data-lucide="sparkles" width="20" height="20"></i></div>
+            <div>
+              <h4>ProjectVault AI Asistanı</h4>
+              <p>Gerçek proje kayıtlarınıza, günlüklerinize ve dokümanlarınıza dayanan güvenli yapay zekâ analizleri.</p>
+            </div>
+          </div>
+          <div class="auth-feature-item">
+            <div class="auth-feature-icon"><i data-lucide="shield-check" width="20" height="20"></i></div>
+            <div>
+              <h4>İzole &amp; Güvenli Mimari</h4>
+              <p>Supabase Auth, Row Level Security (RLS) ve özel dosya depolama politikalarıyla tam veri koruması.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-brand-footer">
+        <span>ProjectVault Personal Knowledge &amp; AI Memory Platform</span>
+        <span>Europe/Istanbul Zaman Dilimi</span>
+      </div>
+    </section>
+
+    <section class="auth-form-panel">
+      <div class="auth-card fade-in">
+        <div class="auth-card-header">
+          <div class="mobile-logo">
+            <img src="assets/images/logo.svg" alt="ProjectVault">
+            <span style="font-size:1.25rem;font-weight:800;">Project<span class="text-gradient">Vault</span></span>
+          </div>
+          <h1>Tekrar Hoş Geldiniz</h1>
+          <p>Proje merkezinize erişmek için hesabınıza giriş yapın.</p>
+        </div>
+
+        <div id="auth-local-db-info" class="alert alert-info mb-4 hidden">
+          <i data-lucide="database" width="18" height="18" style="flex-shrink:0;"></i>
+          <div>
+            <strong>Yerleşik Kalıcı Veritabanı Aktif</strong>
+            <div class="mt-1">Hazır giriş: Kullanıcı adı <code class="mono">admin</code> • Şifre <code class="mono">123456</code> (veya aşağıdan yeni hesap oluşturabilirsiniz).</div>
+          </div>
+        </div>
+
+        <div id="auth-config-alert" class="alert alert-warning mb-4 hidden">
+          <i data-lucide="database" width="18" height="18" style="flex-shrink:0;"></i>
+          <div>
+            <strong>Supabase Bağlantısı Yapılandırılmadı.</strong>
+            <div class="mt-1">Giriş yapabilmek için Supabase Project URL ve Anon Key bilgilerinizi girin veya Netlify ortam değişkenlerini tanımlayın.</div>
+            <div class="flex items-center gap-2 flex-wrap mt-2">
+              <button type="button" class="btn btn-secondary btn-sm" id="open-sb-config-btn">Bağlantı Ayarlarını Gir</button>
+              <a href="dashboard.html" class="btn btn-outline btn-sm">Arayüzü İncele (Bağlantısız Önizleme)</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="login-alert" class="hidden"></div>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-identifier">Kullanıcı Adı veya E-posta</label>
+            <input type="text" id="login-identifier" class="form-control" placeholder="ornek@eposta.com veya kullanici_adi" autocomplete="username" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Şifre</label>
+            <div class="password-input-wrap">
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="password-toggle-btn" data-toggle-password="login-password" aria-label="Şifreyi göster/gizle">
+                <i data-lucide="eye" width="18" height="18"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-options-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="login-remember">
+              <span>Beni hatırla</span>
+            </label>
+            <a href="#" id="forgot-password-trigger">Şifremi unuttum</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full btn-lg" id="login-submit-btn">
+            <i data-lucide="log-in" width="18" height="18"></i> Giriş Yap
+          </button>
+        </form>
+
+        <div class="auth-divider">veya</div>
+
+        <div class="auth-footer-links">
+          Henüz hesabınız yok mu? <a href="register.html"><strong>Hesap Oluştur</strong></a>
+        </div>
+
+        <div class="auth-config-strip">
+          <span>Tema &amp; Bağlantı</span>
+          <div class="flex items-center gap-2">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="PV.sb.openSupabaseConfigModal()">Supabase Ayarı</button>
+            <button type="button" class="btn btn-secondary btn-icon btn-sm" data-theme-toggle onclick="PV.sb.toggleTheme()" title="Tema Değiştir"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Şifremi Unuttum Modal -->
+  <div class="modal-backdrop" id="forgot-password-modal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="key-round" width="18" height="18"></i> Şifre Sıfırlama</h3>
+        <button type="button" class="btn-ghost btn-icon btn-sm" onclick="PV.sb.closeModal('forgot-password-modal')"><i data-lucide="x" width="16" height="16"></i></button>
+      </div>
+      <form id="forgot-password-form">
+        <div class="modal-body">
+          <p class="text-secondary mb-4" style="font-size:0.88rem;">Kayıtlı e-posta adresinizi girin; şifre sıfırlama bağlantısı gönderelim.</p>
+          <div class="form-group">
+            <label class="form-label" for="forgot-email">E-posta Adresi</label>
+            <input type="email" id="forgot-email" class="form-control" required placeholder="ornek@eposta.com">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="PV.sb.closeModal('forgot-password-modal')">İptal</button>
+          <button type="submit" class="btn btn-primary">Sıfırlama Bağlantısı Gönder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Yeni Şifre Belirleme Modal (Recovery Callback) -->
+  <div class="modal-backdrop" id="reset-password-update-modal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Yeni Şifre Belirle</h3>
+        <button type="button" class="btn-ghost btn-icon btn-sm" onclick="PV.sb.closeModal('reset-password-update-modal')"><i data-lucide="x" width="16" height="16"></i></button>
+      </div>
+      <form id="reset-password-update-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="recovery-new-password">Yeni Şifre (En az 6 karakter)</label>
+            <input type="password" id="recovery-new-password" class="form-control" minlength="6" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      PV.utils.renderIcons();
+      PV.auth.initLoginPage();
+    });
+  </script>
+</body>
+</html>
