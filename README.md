@@ -189,3 +189,12 @@ Projede tüm frontend ve backend JavaScript dosyalarının sözdizimi bütünlü
 ```bash
 npm run test:syntax
 ```
+
+---
+
+## Geliştirici & Lisans
+
+Bu proje **Ahmet Gün** tarafından **Google Gemini** yapay zekâ desteği kullanılarak geliştirilmiştir.
+
+Proje **MIT Lisansı** ile lisanslanmıştır. Detaylar için [`LICENSE`](LICENSE) dosyasına bakabilirsiniz.
+

@@ -2,6 +2,8 @@
   "name": "projectvault",
   "version": "1.0.0",
   "description": "ProjectVault — Personal Project Management, Knowledge & AI Memory Platform",
+  "author": "Ahmet Gün",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "start": "node server.js",
