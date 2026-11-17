@@ -54,6 +54,20 @@
       PV.sb.openSupabaseConfigModal(() => window.location.reload());
     });
 
+    const badgeEl = document.getElementById('auth-db-status-badge');
+    if (badgeEl) {
+      if (PV.sb.isSupabaseConfigured()) {
+        badgeEl.className = 'badge badge-success';
+        badgeEl.textContent = 'Supabase Bağlı';
+      } else if (sb) {
+        badgeEl.className = 'badge badge-cyan';
+        badgeEl.textContent = 'Yerel Mod Aktif';
+      } else {
+        badgeEl.className = 'badge badge-warning';
+        badgeEl.textContent = 'Bağlı Değil';
+      }
+    }
+
     if (!sb) {
       configAlert?.classList.remove('hidden');
       return;
@@ -194,6 +208,20 @@
     document.getElementById('open-sb-config-btn')?.addEventListener('click', () => {
       PV.sb.openSupabaseConfigModal(() => window.location.reload());
     });
+
+    const badgeEl = document.getElementById('auth-db-status-badge');
+    if (badgeEl) {
+      if (PV.sb.isSupabaseConfigured()) {
+        badgeEl.className = 'badge badge-success';
+        badgeEl.textContent = 'Supabase Bağlı';
+      } else if (sb) {
+        badgeEl.className = 'badge badge-cyan';
+        badgeEl.textContent = 'Yerel Mod Aktif';
+      } else {
+        badgeEl.className = 'badge badge-warning';
+        badgeEl.textContent = 'Bağlı Değil';
+      }
+    }
 
     if (!sb) {
       configAlert?.classList.remove('hidden');

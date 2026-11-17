@@ -662,8 +662,9 @@
       });
     }
 
-    document.getElementById('pv-cfg-sb-url').value = PV.config.SUPABASE_URL || '';
-    document.getElementById('pv-cfg-sb-key').value = PV.config.SUPABASE_ANON_KEY || '';
+    // Mevcut URL ve API anahtarını güvenlik için form alanlarına önceden doldurma
+    document.getElementById('pv-cfg-sb-url').value = '';
+    document.getElementById('pv-cfg-sb-key').value = '';
 
     const form = document.getElementById('pv-sb-config-form');
     form.onsubmit = async (e) => {
@@ -1523,8 +1524,8 @@
 
     if (sbStatusEl) {
       sbStatusEl.innerHTML = isLocalDbMode
-        ? `<span class="badge badge-success">Yerleşik Kalıcı Veritabanı Aktif (local-db.json)</span>`
-        : `<span class="badge badge-success">Supabase Bağlı (${PV.utils.escapeHtml(PV.config.SUPABASE_URL)})</span>`;
+        ? `<span class="badge badge-success">Yerleşik Kalıcı Veritabanı Aktif</span>`
+        : `<span class="badge badge-success">Supabase Bağlı</span>`;
     }
     if (aiStatusEl) {
       aiStatusEl.innerHTML = PV.config.AI_CONFIGURED
