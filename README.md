@@ -238,7 +238,7 @@ npm run test:syntax
 
 ## Geliştirici & Lisans
 
-Bu proje **Ahmet Gün** tarafından **Google Gemini** yapay zekâ desteği kullanılarak geliştirilmiştir.
+Bu proje **Ahmet Gün** tarafından **Google Gemini** ile geliştirilmiştir.
 
 Proje **MIT Lisansı** ile lisanslanmıştır. Detaylar için [`LICENSE`](LICENSE) dosyasına bakabilirsiniz.
 
