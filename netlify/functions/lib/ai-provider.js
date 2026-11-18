@@ -56,7 +56,7 @@ function buildProviderCatalog() {
     provider: 'openrouter',
     apiKey: openrouterKey,
     baseUrl: (explicitProvider === 'openrouter' && explicitBaseUrl) || 'https://openrouter.ai/api/v1',
-    model: cleanEnv('OPENROUTER_MODEL') || (explicitProvider === 'openrouter' && explicitModel) || 'meta-llama/llama-3.3-70b-instruct:free',
+    model: cleanEnv('OPENROUTER_MODEL') || (explicitProvider === 'openrouter' && explicitModel) || 'openrouter/free',
     extraHeaders: {
       'HTTP-Referer': cleanEnv('APP_URL') || 'https://projectvault.app',
       'X-Title': 'ProjectVault'
