@@ -404,7 +404,7 @@
         contentHtml = `
           <div class="card mb-4" style="border-color:rgba(6,182,212,0.35);">
             <div class="card-header"><span class="card-title"><i data-lucide="sparkles" width="16" height="16" class="text-cyan"></i> AI Doküman Özeti</span></div>
-            <div style="white-space:pre-wrap;font-size:0.88rem;">${PV.utils.escapeHtml(doc.ai_summary)}</div>
+            <div class="pv-markdown" style="font-size:0.88rem;">${PV.utils.renderMarkdown(doc.ai_summary)}</div>
           </div>
           ${contentHtml}
         `;

@@ -851,7 +851,7 @@
               <div class="card-header">
                 <span class="card-title"><i data-lucide="sparkles" width="16" height="16" class="text-cyan"></i> ProjectVault AI Hafıza Özeti</span>
               </div>
-              <div style="white-space:pre-wrap;font-size:0.9rem;">${PV.utils.escapeHtml(result.content)}</div>
+              <div class="pv-markdown" style="font-size:0.9rem;">${PV.utils.renderMarkdown(result.content)}</div>
             </div>
           `;
           PV.utils.renderIcons();

@@ -149,7 +149,10 @@
     const sources = Array.isArray(m.sources) ? m.sources : [];
     return `
       <div class="ai-msg ${isUser ? 'ai-msg-user' : 'ai-msg-assistant'}">
-        <div style="white-space:pre-wrap;">${PV.utils.escapeHtml(m.content)}</div>
+        ${isUser
+          ? `<div style="white-space:pre-wrap;">${PV.utils.escapeHtml(m.content)}</div>`
+          : `<div class="pv-markdown">${PV.utils.renderMarkdown(m.content)}</div>`
+        }
         ${sources.length ? `
           <div class="ai-sources-box">
             <strong>Dayanak Kayıtlar:</strong>

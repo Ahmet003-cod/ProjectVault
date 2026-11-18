@@ -1,71 +1,140 @@
 'use strict';
 
 /**
- * ProjectVault Modüler AI Sağlayıcı Adaptörü
- * Merkezi yapılandırma sayesinde Gemini, Qwen, Llama, Mistral veya
- * OpenAI uyumlu herhangi bir endpoint arasında kolayca geçiş yapılabilir.
+ * ProjectVault Modüler AI Sağlayıcı Adaptörü ve Otomatik Yedekleme (Failover)
+ *
+ * Desteklenen ücretsiz / modüler sağlayıcılar:
+ * - Groq (GROQ_API_KEY)
+ * - Google Gemini (GEMINI_API_KEY)
+ * - OpenRouter (OPENROUTER_API_KEY)
+ * - Mistral AI (MISTRAL_API_KEY)
+ * - Cerebras (CEREBRAS_API_KEY)
+ * - Genel OpenAI uyumlu endpoint (AI_API_KEY + AI_BASE_URL)
+ *
+ * Birincil sağlayıcı kota/hız sınırına (429) veya sunucu hatasına takıldığında
+ * sistem durmadan otomatik olarak sıradaki yapılandırılmış sağlayıcıya geçer.
  */
 
+function cleanEnv(name) {
+  return (process.env[name] || '').trim();
+}
+
+function buildProviderCatalog() {
+  const explicitProvider = cleanEnv('AI_PROVIDER').toLowerCase();
+  const explicitModel = cleanEnv('AI_MODEL');
+  const explicitBaseUrl = cleanEnv('AI_BASE_URL').replace(/\/+$/, '');
+
+  const groqKey = cleanEnv('GROQ_API_KEY');
+  const geminiKey = cleanEnv('GEMINI_API_KEY');
+  const openrouterKey = cleanEnv('OPENROUTER_API_KEY');
+  const mistralKey = cleanEnv('MISTRAL_API_KEY');
+  const cerebrasKey = cleanEnv('CEREBRAS_API_KEY');
+  const genericKey = cleanEnv('AI_API_KEY');
+
+  const candidates = [];
+
+  const addIfConfigured = (entry) => {
+    if (entry.apiKey) {
+      candidates.push({ ...entry, configured: true });
+    }
+  };
+
+  addIfConfigured({
+    provider: 'groq',
+    apiKey: groqKey || (genericKey.startsWith('gsk_') ? genericKey : ''),
+    baseUrl: (explicitProvider === 'groq' && explicitBaseUrl) || 'https://api.groq.com/openai/v1',
+    model: cleanEnv('GROQ_MODEL') || (explicitProvider === 'groq' && explicitModel) || 'openai/gpt-oss-120b'
+  });
+
+  addIfConfigured({
+    provider: 'gemini',
+    apiKey: geminiKey,
+    model: cleanEnv('GEMINI_MODEL') || (explicitProvider === 'gemini' && explicitModel) || 'gemini-2.0-flash'
+  });
+
+  addIfConfigured({
+    provider: 'openrouter',
+    apiKey: openrouterKey,
+    baseUrl: (explicitProvider === 'openrouter' && explicitBaseUrl) || 'https://openrouter.ai/api/v1',
+    model: cleanEnv('OPENROUTER_MODEL') || (explicitProvider === 'openrouter' && explicitModel) || 'meta-llama/llama-3.3-70b-instruct:free',
+    extraHeaders: {
+      'HTTP-Referer': cleanEnv('APP_URL') || 'https://projectvault.app',
+      'X-Title': 'ProjectVault'
+    }
+  });
+
+  addIfConfigured({
+    provider: 'mistral',
+    apiKey: mistralKey,
+    baseUrl: (explicitProvider === 'mistral' && explicitBaseUrl) || 'https://api.mistral.ai/v1',
+    model: cleanEnv('MISTRAL_MODEL') || (explicitProvider === 'mistral' && explicitModel) || 'mistral-small-latest'
+  });
+
+  addIfConfigured({
+    provider: 'cerebras',
+    apiKey: cerebrasKey,
+    baseUrl: (explicitProvider === 'cerebras' && explicitBaseUrl) || 'https://api.cerebras.ai/v1',
+    model: cleanEnv('CEREBRAS_MODEL') || (explicitProvider === 'cerebras' && explicitModel) || 'llama-3.3-70b'
+  });
+
+  if (genericKey && !genericKey.startsWith('gsk_')) {
+    const customName =
+      explicitProvider && !['groq', 'gemini', 'openrouter', 'mistral', 'cerebras'].includes(explicitProvider)
+        ? explicitProvider
+        : 'openai_compatible';
+    addIfConfigured({
+      provider: customName,
+      apiKey: genericKey,
+      baseUrl: explicitBaseUrl || 'https://api.openai.com/v1',
+      model: explicitModel || 'gpt-4o-mini'
+    });
+  }
+
+  if (explicitProvider) {
+    const idx = candidates.findIndex((c) => c.provider === explicitProvider);
+    if (idx > 0) {
+      const [preferred] = candidates.splice(idx, 1);
+      candidates.unshift(preferred);
+    }
+  }
+
+  return candidates;
+}
+
+function getConfiguredProviders() {
+  return buildProviderCatalog();
+}
+
 function getAiConfig() {
-  const explicitProvider = (process.env.AI_PROVIDER || '').trim().toLowerCase();
-  const groqKey = (process.env.GROQ_API_KEY || '').trim();
-  const genericKey = (process.env.AI_API_KEY || '').trim();
-  const geminiKey = (process.env.GEMINI_API_KEY || '').trim();
-
-  let provider = explicitProvider;
-  if (!provider) {
-    if (groqKey || genericKey.startsWith('gsk_')) provider = 'groq';
-    else provider = 'gemini';
-  }
-
-  if (provider === 'gemini') {
-    const model = (process.env.AI_MODEL || 'gemini-2.0-flash').trim();
+  const providers = getConfiguredProviders();
+  if (providers.length > 0) {
     return {
-      provider: 'gemini',
-      model,
-      apiKey: geminiKey,
-      configured: Boolean(geminiKey)
+      ...providers[0],
+      availableProviders: providers.map((p) => p.provider)
     };
   }
 
-  if (provider === 'groq') {
-    const apiKey = groqKey || genericKey;
-    const baseUrl = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').trim().replace(/\/+$/, '');
-    const model = (process.env.AI_MODEL || 'openai/gpt-oss-120b').trim();
-    return {
-      provider: 'groq',
-      model,
-      apiKey,
-      baseUrl,
-      configured: Boolean(apiKey)
-    };
-  }
-
-  // OpenAI uyumlu diğer sağlayıcılar: qwen, llama, mistral, openrouter, ollama, openai_compatible
-  const apiKey = genericKey || groqKey || geminiKey;
-  const baseUrl = (process.env.AI_BASE_URL || 'https://api.openai.com/v1').trim().replace(/\/+$/, '');
-  const model = (process.env.AI_MODEL || 'gpt-4o-mini').trim();
   return {
-    provider,
-    model,
-    apiKey,
-    baseUrl,
-    configured: Boolean(apiKey)
+    provider: cleanEnv('AI_PROVIDER').toLowerCase() || 'groq',
+    model: cleanEnv('AI_MODEL') || 'openai/gpt-oss-120b',
+    apiKey: '',
+    baseUrl: cleanEnv('AI_BASE_URL').replace(/\/+$/, '') || 'https://api.groq.com/openai/v1',
+    configured: false,
+    availableProviders: []
   };
 }
 
-async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], temperature = 0.2 }) {
-  const cfg = getAiConfig();
-
-  if (!cfg.configured) {
-    const err = new Error(
-      'AI servisi henüz yapılandırılmamış. Lütfen GEMINI_API_KEY, GROQ_API_KEY veya AI_API_KEY ortam değişkenini tanımlayın.'
-    );
-    err.statusCode = 503;
-    err.code = 'AI_NOT_CONFIGURED';
-    throw err;
+async function parseJsonSafe(res) {
+  const raw = await res.text();
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return { error: { message: raw.slice(0, 300) } };
   }
+}
 
+async function callSingleProvider(cfg, { systemPrompt, messages, inlineParts = [], temperature = 0.2 }) {
   if (cfg.provider === 'gemini') {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${encodeURIComponent(cfg.apiKey)}`;
 
@@ -95,7 +164,7 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
       })
     });
 
-    const data = await res.json();
+    const data = await parseJsonSafe(res);
     if (!res.ok) {
       const msg = data?.error?.message || `Gemini API hatası (${res.status})`;
       const err = new Error(msg);
@@ -105,7 +174,7 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
 
     const text = data?.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('\n') || '';
     if (!text) {
-      throw new Error('AI modelinden boş yanıt döndü.');
+      throw new Error('Gemini modelinden boş yanıt döndü.');
     }
 
     return {
@@ -115,7 +184,7 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
     };
   }
 
-  // OpenAI Uyumlu Modüler Sağlayıcı (Qwen / Llama / Mistral / OpenRouter / Ollama)
+  // OpenAI Uyumlu Modüler Sağlayıcı (Groq / OpenRouter / Mistral / Cerebras / Ollama / Custom)
   const endpoint = `${cfg.baseUrl}/chat/completions`;
   const payloadMessages = [
     { role: 'system', content: systemPrompt },
@@ -125,12 +194,15 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
     }))
   ];
 
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${cfg.apiKey}`,
+    ...(cfg.extraHeaders || {})
+  };
+
   const res = await fetch(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${cfg.apiKey}`
-    },
+    headers,
     body: JSON.stringify({
       model: cfg.model,
       messages: payloadMessages,
@@ -138,9 +210,9 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
     })
   });
 
-  const data = await res.json();
+  const data = await parseJsonSafe(res);
   if (!res.ok) {
-    const msg = data?.error?.message || `AI sağlayıcı hatası (${res.status})`;
+    const msg = data?.error?.message || `${cfg.provider} API hatası (${res.status})`;
     const err = new Error(msg);
     err.statusCode = res.status >= 500 ? 502 : res.status;
     throw err;
@@ -149,7 +221,7 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
   let text = data?.choices?.[0]?.message?.content || '';
   text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   if (!text) {
-    throw new Error('AI sağlayıcısından boş yanıt döndü.');
+    throw new Error(`${cfg.provider} sağlayıcısından boş yanıt döndü.`);
   }
 
   return {
@@ -159,7 +231,54 @@ async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], 
   };
 }
 
+async function generateAiCompletion({ systemPrompt, messages, inlineParts = [], temperature = 0.2 }) {
+  const providers = getConfiguredProviders();
+
+  if (providers.length === 0) {
+    const err = new Error(
+      'AI servisi henüz yapılandırılmamış. Lütfen GROQ_API_KEY, GEMINI_API_KEY, OPENROUTER_API_KEY, MISTRAL_API_KEY veya CEREBRAS_API_KEY ortam değişkenlerinden en az birini tanımlayın.'
+    );
+    err.statusCode = 503;
+    err.code = 'AI_NOT_CONFIGURED';
+    throw err;
+  }
+
+  const errors = [];
+  const attemptedProviders = [];
+
+  for (let i = 0; i < providers.length; i++) {
+    const cfg = providers[i];
+    attemptedProviders.push(cfg.provider);
+    try {
+      const result = await callSingleProvider(cfg, {
+        systemPrompt,
+        messages,
+        inlineParts,
+        temperature
+      });
+      return {
+        ...result,
+        fallbackUsed: i > 0,
+        attemptedProviders
+      };
+    } catch (err) {
+      const reason = err?.message || 'Bilinmeyen hata';
+      errors.push(`${cfg.provider}: ${reason}`);
+      console.warn(`[AI Failover] ${cfg.provider} (${cfg.model}) başarısız: ${reason}`);
+    }
+  }
+
+  const finalError = new Error(
+    providers.length > 1
+      ? `Tüm AI sağlayıcıları başarısız oldu (${errors.join(' | ')})`
+      : errors[0] || 'AI isteği başarısız oldu.'
+  );
+  finalError.statusCode = 502;
+  throw finalError;
+}
+
 module.exports = {
   getAiConfig,
+  getConfiguredProviders,
   generateAiCompletion
 };

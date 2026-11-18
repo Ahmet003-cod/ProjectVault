@@ -279,6 +279,7 @@ exports.handler = async (event) => {
       'Yalnızca aşağıdaki JSON içindeki gerçek veritabanı kayıtlarını esas al.',
       'Kayıtlarda olmayan bilgileri kesinlikle gerçekmiş gibi üretme; eksik alanlar için "Kayıt bulunmuyor" ifadesini kullan.',
       'Yanıtında hangi kayıt başlıklarına dayandığını açıkça belirt.',
+      'Yanıtını mobil ve masaüstü ekranda kolay okunacak şekilde kısa başlıklar (##) ve madde işaretleriyle (-) düzenle; geniş çok sütunlu Markdown tabloları ve <br> etiketi kullanma.',
       '',
       'VERİTABANI KAYITLARI:',
       ctx.contextText

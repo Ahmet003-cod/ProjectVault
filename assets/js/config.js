@@ -251,10 +251,131 @@
     if (current) selectEl.value = current;
   }
 
+  function renderMarkdown(rawText) {
+    if (!rawText) return '';
+    const codeBlocks = [];
+    let escaped = escapeHtml(String(rawText).replace(/\r\n/g, '\n'));
+
+    // Fenced code blocks
+    escaped = escaped.replace(/```[\w-]*\n([\s\S]*?)```/g, (_, code) => {
+      const idx = codeBlocks.length;
+      codeBlocks.push(`<pre class="md-code-block"><code>${code.trimEnd()}</code></pre>`);
+      return `\n@@CODEBLOCK_${idx}@@\n`;
+    });
+
+    const formatInline = (line) => {
+      return line
+        .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
+        .replace(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
+    };
+
+    const lines = escaped.split('\n');
+    const out = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        i++;
+        continue;
+      }
+
+      if (/^@@CODEBLOCK_\d+@@$/.test(trimmed)) {
+        out.push(trimmed);
+        i++;
+        continue;
+      }
+
+      // Markdown Table
+      if (
+        trimmed.startsWith('|') &&
+        i + 1 < lines.length &&
+        /^\s*\|?[\s:-]+\|[\s|:-]+\s*$/.test(lines[i + 1])
+      ) {
+        const parseCells = (rowStr) =>
+          rowStr.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => formatInline(c.trim()));
+
+        const headers = parseCells(trimmed);
+        i += 2;
+        const bodyRows = [];
+        while (i < lines.length && lines[i].trim().startsWith('|')) {
+          bodyRows.push(parseCells(lines[i]));
+          i++;
+        }
+
+        out.push(
+          `<div class="md-table-wrap"><table class="md-table"><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${bodyRows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+        );
+        continue;
+      }
+
+      // Headings
+      const hMatch = trimmed.match(/^(#{1,4})\s+(.+)$/);
+      if (hMatch) {
+        const level = Math.min(4, hMatch[1].length + 1);
+        out.push(`<h${level} class="md-heading">${formatInline(hMatch[2])}</h${level}>`);
+        i++;
+        continue;
+      }
+
+      // Horizontal Rule
+      if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
+        out.push('<hr class="md-hr">');
+        i++;
+        continue;
+      }
+
+      // Bullet List
+      if (/^([-*•])\s+/.test(trimmed)) {
+        const items = [];
+        while (i < lines.length && /^([-*•])\s+/.test(lines[i].trim())) {
+          items.push(`<li>${formatInline(lines[i].trim().replace(/^([-*•])\s+/, ''))}</li>`);
+          i++;
+        }
+        out.push(`<ul class="md-list">${items.join('')}</ul>`);
+        continue;
+      }
+
+      // Numbered List
+      if (/^\d+\.\s+/.test(trimmed)) {
+        const items = [];
+        while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+          items.push(`<li>${formatInline(lines[i].trim().replace(/^\d+\.\s+/, ''))}</li>`);
+          i++;
+        }
+        out.push(`<ol class="md-list">${items.join('')}</ol>`);
+        continue;
+      }
+
+      // Paragraph
+      const para = [];
+      while (
+        i < lines.length &&
+        lines[i].trim() &&
+        !/^(#{1,4}\s+|[-*•]\s+|\d+\.\s+|\||@@CODEBLOCK_)/.test(lines[i].trim())
+      ) {
+        para.push(formatInline(lines[i].trim()));
+        i++;
+      }
+      out.push(`<p class="md-p">${para.join('<br>')}</p>`);
+    }
+
+    let html = out.join('');
+    codeBlocks.forEach((blk, idx) => {
+      html = html.replace(`@@CODEBLOCK_${idx}@@`, blk);
+    });
+    return html;
+  }
+
   PV.config = APP_CONFIG;
   PV.loadRuntimePublicConfig = loadRuntimePublicConfig;
   PV.utils = {
     escapeHtml,
+    renderMarkdown,
     formatDate,
     formatDateTime,
     getIstanbulDateString,

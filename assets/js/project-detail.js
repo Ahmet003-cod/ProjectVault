@@ -709,7 +709,7 @@
       : '';
     outEl.innerHTML = `
       <div class="card" style="background:var(--bg-tertiary);">
-        <div style="white-space:pre-wrap;font-size:0.92rem;line-height:1.65;">${PV.utils.escapeHtml(data.content)}</div>
+        <div class="pv-markdown">${PV.utils.renderMarkdown(data.content)}</div>
         ${sourcesHtml}
       </div>
     `;

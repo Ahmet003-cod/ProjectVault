@@ -649,3 +649,94 @@ select.form-control {
 .data-table tr:hover td {
   background: var(--bg-hover);
 }
+
+/* AI Markdown Çıktı Stilleri (Mobil & Masaüstü Okunabilirlik) */
+.pv-markdown {
+  font-size: 0.91rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.pv-markdown .md-p {
+  margin-bottom: 0.65rem;
+}
+
+.pv-markdown .md-p:last-child {
+  margin-bottom: 0;
+}
+
+.pv-markdown .md-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin: 0.9rem 0 0.45rem;
+}
+
+.pv-markdown .md-heading:first-child {
+  margin-top: 0;
+}
+
+.pv-markdown .md-list {
+  padding-left: 1.25rem;
+  margin: 0.45rem 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pv-markdown .md-inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  padding: 0.12rem 0.38rem;
+  border-radius: 5px;
+  background: rgba(139, 92, 246, 0.16);
+  color: var(--accent-cyan);
+  border: 1px solid var(--border-color);
+}
+
+.pv-markdown .md-code-block {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  overflow-x: auto;
+  margin: 0.6rem 0;
+  font-size: 0.82rem;
+}
+
+.pv-markdown .md-hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0.85rem 0;
+}
+
+.pv-markdown .md-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  margin: 0.65rem 0;
+}
+
+.pv-markdown .md-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 420px;
+}
+
+.pv-markdown .md-table th,
+.pv-markdown .md-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+.pv-markdown .md-table th {
+  background: var(--bg-secondary);
+  color: var(--accent-cyan);
+  font-weight: 600;
+}

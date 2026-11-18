@@ -69,6 +69,7 @@ exports.handler = async (event) => {
       '3. Bir bilgi kayıtlarda yoksa açıkça "Veritabanı kayıtlarında buna dair bilgi bulunamadı." de.',
       '4. Yanıtının sonunda mümkün olduğunda hangi proje adlarına, günlük tarihlerine veya doküman adlarına dayandığını kısaca belirt.',
       '5. Zaman dilimi Europe/Istanbul olarak değerlendir.',
+      '6. Yanıtını mobil ve masaüstü ekranda kolay okunacak şekilde düzenle: kısa başlıklar (##) ve madde işaretleri (-) kullan; geniş çok sütunlu Markdown tabloları ve tablo içinde <br> etiketi kullanma.',
       '',
       'KULLANICININ GERÇEK VERİTABANI KAYITLARI:',
       ctx.contextText

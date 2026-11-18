@@ -110,8 +110,9 @@
             </div>
           ` : ''}
           ${idea.ai_suggestions ? `
-            <div class="alert alert-info mt-3" style="font-size:0.8rem;">
-              <div><strong>AI Önerisi:</strong><br><span style="white-space:pre-wrap;">${PV.utils.escapeHtml(idea.ai_suggestions)}</span></div>
+            <div class="alert alert-info mt-3" style="font-size:0.84rem;flex-direction:column;">
+              <strong>AI Önerisi:</strong>
+              <div class="pv-markdown">${PV.utils.renderMarkdown(idea.ai_suggestions)}</div>
             </div>
           ` : ''}
         </div>

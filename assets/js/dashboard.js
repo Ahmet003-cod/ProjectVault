@@ -427,7 +427,7 @@
       box.innerHTML = `
         <div class="alert alert-success" style="flex-direction:column;">
           <div class="flex items-center gap-2"><strong><i data-lucide="sparkles" width="15" height="15"></i> AI Stratejik Önerileri</strong></div>
-          <div style="white-space:pre-wrap;font-size:0.86rem;">${PV.utils.escapeHtml(data.content)}</div>
+          <div class="pv-markdown" style="font-size:0.88rem;">${PV.utils.renderMarkdown(data.content)}</div>
         </div>
       `;
       PV.utils.renderIcons();
